@@ -23,9 +23,6 @@
 			],
 			"transformations": [
 				{
-					"name": "select1"
-				},
-				{
 					"name": "aggregate1"
 				},
 				{
@@ -33,6 +30,18 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "selectionforwindowfunction"
+				},
+				{
+					"name": "window1"
+				},
+				{
+					"name": "filter2"
 				}
 			],
 			"scriptLines": [
@@ -49,6 +58,15 @@
 				"     schemaName: 'dbo',",
 				"     tableName: 'products',",
 				"     isolationLevel: 'READ_UNCOMMITTED') ~> productDataSource",
+				"productDataSource aggregate(groupBy(product_category),",
+				"     avg_price = avg(price),",
+				"          max_price = max(price)) ~> aggregate1",
+				"select2, aggregate1 join(select2@product_category == aggregate1@product_category,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 filter(price>avg_price && price<max_price) ~> filter1",
 				"productDataSource select(mapColumn(",
 				"          product_id,",
 				"          product_name,",
@@ -56,16 +74,20 @@
 				"          product_category",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 aggregate(groupBy(product_category),",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"productDataSource select(mapColumn(",
+				"          product_id,",
+				"          product_name,",
+				"          price,",
+				"          product_category",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectionforwindowfunction",
+				"selectionforwindowfunction window(over(product_category),",
+				"     asc(product_category, true),",
 				"     avg_price = avg(price),",
-				"          max_price = max(price)) ~> aggregate1",
-				"productDataSource, aggregate1 join(productDataSource@product_category == aggregate1@product_category,",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
-				"join1 filter(price>avg_price && price<max_price) ~> filter1",
+				"          max_price = max(price)) ~> window1",
+				"window1 filter(price>avg_price && price<max_price) ~> filter2",
 				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'delimited',",
