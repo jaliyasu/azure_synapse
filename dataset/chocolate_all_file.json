@@ -1,0 +1,95 @@
+{
+	"name": "chocolate_all_file",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage_dir_Chocolate",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "csv-files"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ref",
+				"type": "String"
+			},
+			{
+				"name": "company",
+				"type": "String"
+			},
+			{
+				"name": "company_location",
+				"type": "String"
+			},
+			{
+				"name": "review_date",
+				"type": "String"
+			},
+			{
+				"name": "country_of_bean_origin",
+				"type": "String"
+			},
+			{
+				"name": "specific_bean_origin_or_bar_name",
+				"type": "String"
+			},
+			{
+				"name": "cocoa_percent",
+				"type": "String"
+			},
+			{
+				"name": "rating",
+				"type": "String"
+			},
+			{
+				"name": "counts_of_ingredients",
+				"type": "String"
+			},
+			{
+				"name": "beans",
+				"type": "String"
+			},
+			{
+				"name": "cocoa_butter",
+				"type": "String"
+			},
+			{
+				"name": "vanilla",
+				"type": "String"
+			},
+			{
+				"name": "lecithin",
+				"type": "String"
+			},
+			{
+				"name": "salt",
+				"type": "String"
+			},
+			{
+				"name": "sugar",
+				"type": "String"
+			},
+			{
+				"name": "sweetener_without_sugar",
+				"type": "String"
+			},
+			{
+				"name": "first_taste",
+				"type": "String"
+			},
+			{
+				"name": "number_of_tastes",
+				"type": "String"
+			}
+		]
+	}
+}
