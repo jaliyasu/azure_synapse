@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "synapse-workspace-jsps-1980"
+		},
+		"AzureDataLakeStorage_chocolate_parameterised_accountKey": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_dir_Chocolate_accountKey": {
+			"value": ""
+		},
+		"linkedService_Azure_DB_password": {
+			"value": ""
+		},
+		"synapse-workspace-jsps-1980-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-workspace-jsps-1980.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"AzureDataLakeStorage_chocolate_parameterised_properties_typeProperties_url": {
+			"value": "https://jsonjsps2024.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage_dir_Chocolate_properties_typeProperties_url": {
+			"value": "https://jsonjsps2024.dfs.core.windows.net/"
+		},
+		"linkedService_Azure_DB_properties_typeProperties_server": {
+			"value": "servermssql2024.database.windows.net"
+		},
+		"linkedService_Azure_DB_properties_typeProperties_database": {
+			"value": "mssql2024"
+		},
+		"linkedService_Azure_DB_properties_typeProperties_userName": {
+			"value": "Rootroot"
+		},
+		"synapse-workspace-jsps-1980-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://sysnapsejsps1980.dfs.core.windows.net"
+		}
+	}
+}
