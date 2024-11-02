@@ -1,0 +1,64 @@
+{
+	"name": "Dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "linkedService_Azure_DB",
+						"type": "LinkedServiceReference"
+					},
+					"name": "productDataSource"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          product_id as integer,",
+				"          product_name as string,",
+				"          price as decimal(10,2),",
+				"          product_category as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'products',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> productDataSource",
+				"productDataSource select(mapColumn(",
+				"          product_id,",
+				"          product_name,",
+				"          price,",
+				"          product_category",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 aggregate(groupBy(product_category),",
+				"     avg_price = avg(price),",
+				"          max_price = max(price)) ~> aggregate1",
+				"productDataSource, aggregate1 join(productDataSource@product_category == aggregate1@product_category,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 filter(price>avg_price && price<max_price) ~> filter1"
+			]
+		}
+	}
+}
