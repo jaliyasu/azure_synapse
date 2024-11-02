@@ -476,6 +476,98 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow1')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "linkedService_Azure_DB",
+								"type": "LinkedServiceReference"
+							},
+							"name": "productDataSource"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "AzureDataLakeStorage_chocolate_parameterised",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "filter1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_id as integer,",
+						"          product_name as string,",
+						"          price as decimal(10,2),",
+						"          product_category as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'dbo',",
+						"     tableName: 'products',",
+						"     isolationLevel: 'READ_UNCOMMITTED') ~> productDataSource",
+						"productDataSource select(mapColumn(",
+						"          product_id,",
+						"          product_name,",
+						"          price,",
+						"          product_category",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 aggregate(groupBy(product_category),",
+						"     avg_price = avg(price),",
+						"          max_price = max(price)) ~> aggregate1",
+						"productDataSource, aggregate1 join(productDataSource@product_category == aggregate1@product_category,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 filter(price>avg_price && price<max_price) ~> filter1",
+						"filter1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delimited',",
+						"     fileSystem: 'junktest',",
+						"     folderPath: 'aggregate.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/linkedService_Azure_DB')]",
+				"[concat(variables('workspaceId'), '/linkedServices/AzureDataLakeStorage_chocolate_parameterised')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
